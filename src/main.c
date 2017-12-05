@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../inc/files.h"
+#include "../inc/utils.h"
 #include "../inc/xor.h"
 #include "../inc/c1.h"
 #include "../inc/c2.h"
