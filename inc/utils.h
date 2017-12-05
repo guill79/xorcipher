@@ -4,7 +4,7 @@
 #include "types.h"
 
 /* Fonctions pour tableaux */
-void init_array(byte ***array, uint8 length);
+byte **init_2d_array(uint8 length);
 void expand_array(byte **array, uint32 new_length);
 void free_array(byte **array, uint32 length);
 void free_2d_array(byte ***array, uint32 length);
