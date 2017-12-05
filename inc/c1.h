@@ -6,8 +6,8 @@
 
 bool char_valid_message(byte c);
 bool char_valid_key(byte c);
-bool init_array(byte ***array, uint8 length);
-bool expand_array(byte **array, uint32 new_length);
+void init_array(byte ***array, uint8 length);
+void expand_array(byte **array, uint32 new_length);
 bool test_char_on_str(byte c, uint8 pos, uint8 key_length, byte str[],
                       uint32 str_length);
 void print_chars(byte chars[], uint8 nb_chars);
