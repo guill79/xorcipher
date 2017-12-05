@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../inc/files.h"
+#include "../inc/utils.h"
 
 uint32 file_to_str(FILE *f, byte *str[]) {
     uint32 f_size = 0;
