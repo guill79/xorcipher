@@ -14,6 +14,6 @@ void extract_keys_loop(uint8 i, byte **key_chars, byte key_chars_length[],
 byte **extract_keys(byte **key_chars, uint8 key_chars_length[],
                     uint8 key_length);
 byte **c1(byte str[], uint32 str_length, uint8 key_length,
-          uint8 key_chars_length[], uint32 *nb_keys);
+          uint8 key_chars_length[]);
 
 #endif // C1_H
