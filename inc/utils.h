@@ -6,7 +6,7 @@
 #define ALLOC_CHECK(ptr) \
     do { \
         if (ptr == NULL) { perror("Probème d'allocation"); exit(1); } \
-    } while(0);
+    } while(0)
 
 /* Fonctions pour tableaux */
 byte **init_2d_array(uint8 length);
