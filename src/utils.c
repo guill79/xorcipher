@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include "../inc/utils.h"
 
-byte *init_array(uint8 length) {
+byte *init_array(uint32 length) {
     byte *array = malloc(length * sizeof(byte));
     ALLOC_CHECK(array);
 
     return array;
 }
 
-byte **init_2d_array(uint8 length1, uint8 length2) {
+byte **init_2d_array(uint32 length1, uint32 length2) {
     byte **array = malloc(length1 * sizeof(byte *));
     ALLOC_CHECK(array);
 
