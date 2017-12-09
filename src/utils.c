@@ -2,12 +2,19 @@
 #include <stdlib.h>
 #include "../inc/utils.h"
 
-byte **init_2d_array(uint8 length) {
-    byte **array = malloc(length * sizeof(byte *));
+byte *init_array(uint8 length) {
+    byte *array = malloc(length * sizeof(byte));
     ALLOC_CHECK(array);
 
-    for (int i = 0; i < length; ++i) {
-        array[i] = malloc(sizeof(byte));
+    return array;
+}
+
+byte **init_2d_array(uint8 length1, uint8 length2) {
+    byte **array = malloc(length1 * sizeof(byte *));
+    ALLOC_CHECK(array);
+
+    for (int i = 0; i < length1; ++i) {
+        array[i] = malloc(length2 * sizeof(byte));
         ALLOC_CHECK(array[i]);
     }
 
@@ -15,7 +22,7 @@ byte **init_2d_array(uint8 length) {
 }
 
 void expand_array(byte **array, uint32 new_length) {
-    *array = realloc(*array, (new_length + 1) * sizeof(byte));
+    *array = realloc(*array, new_length * sizeof(byte));
     ALLOC_CHECK(*array);
 }
 

@@ -9,7 +9,8 @@
     } while(0)
 
 /* Fonctions pour tableaux */
-byte **init_2d_array(uint8 length);
+byte *init_array(uint8 length);
+byte **init_2d_array(uint8 length1, uint8 length2);
 void expand_array(byte **array, uint32 new_length);
 void free_array(byte **array, uint32 length);
 void free_2d_array(byte ***array, uint32 length);
