@@ -2,7 +2,7 @@
 #define C1_H
 
 #include "types.h"
-#define NB_CHARS_MAX 200
+#define MAX_KEY_LENGTH 100
 
 bool char_valid_message(byte c);
 bool char_valid_key(byte c);
