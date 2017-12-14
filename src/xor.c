@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include "../inc/xor.h"
 #include "../inc/types.h"
+#include "../inc/utils.h"
 
 byte *xor(byte str[], uint32 str_length, byte key[]) {
-    byte *str_out = malloc(str_length * sizeof(byte));
+    byte *str_out = init_array(str_length + 1);
 
     int k = 0;
     for (int i = 0; i < str_length; ++i) {
@@ -12,5 +13,7 @@ byte *xor(byte str[], uint32 str_length, byte key[]) {
         str_out[i] = str[i] ^ key[k];
         ++k;
     }
+    str_out[str_length] = '\0';
+
     return str_out;
 }
