@@ -28,7 +28,7 @@ void expand_array(byte **array, uint32 new_length) {
 
 void free_array(byte **array, uint32 length) {
     free(*array);
-    array = NULL;
+    *array = NULL;
 }
 
 void free_2d_array(byte ***array, uint32 length) {
@@ -37,7 +37,7 @@ void free_2d_array(byte ***array, uint32 length) {
         (*array)[i] = NULL;
     }
     free(*array);
-    array = NULL;
+    *array = NULL;
 }
 
 uint32 file_to_str(FILE *f, byte *str[]) {
