@@ -10,10 +10,12 @@ OBJS=$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all: $(EXEC)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-
+$(OBJ_DIR):
+	mkdir -p $@
+	
 $(EXEC): $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
