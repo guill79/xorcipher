@@ -8,6 +8,8 @@ OBJ_DIR=obj
 SRCS=$(wildcard $(SRC_DIR)/*.c)
 OBJS=$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
+.PHONY: clean
+
 all: $(EXEC)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -15,9 +17,9 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $@
-	
+
 $(EXEC): $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
-	rm $(OBJ_DIR)/*.o
+	rm -r $(OBJ_DIR)
