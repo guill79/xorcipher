@@ -16,7 +16,7 @@ void free_array(byte **array, uint32 length);
 void free_2d_array(byte ***array, uint32 length);
 
 /* Fonctions pour I/O fichiers */
-uint32 file_to_str(FILE *f, byte *str[]);
+byte *file_to_str(FILE *f, uint32 *f_size);
 void str_to_file(byte str[], uint32 str_length, FILE *f);
 
 #endif // UTILS_H

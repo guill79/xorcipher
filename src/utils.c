@@ -40,25 +40,23 @@ void free_2d_array(byte ***array, uint32 length) {
     *array = NULL;
 }
 
-uint32 file_to_str(FILE *f, byte *str[]) {
-    uint32 f_size = 0;
-
+byte *file_to_str(FILE *f, uint32 *f_size) {
     /* Récupération de la taille du fichier */
     fseek(f, 0, SEEK_END);
-    f_size = ftell(f);
+    *f_size = ftell(f);
     rewind(f);
 
-    *str = init_array(f_size + 1);
+    byte *str = init_array(*f_size + 1);
 
     /* Lecture du fichier */
-    if (fread(*str, sizeof(byte), f_size, f) != f_size) {
+    if (fread(str, sizeof(byte), *f_size, f) != *f_size) {
         perror("Erreur lecture fichier");
-        return -1;
+        exit(1);
     }
 
-    (*str)[f_size] = '\0';
+    str[*f_size] = '\0';
 
-    return f_size;
+    return str;
 }
 
 void str_to_file(byte str[], uint32 str_length, FILE *f) {
