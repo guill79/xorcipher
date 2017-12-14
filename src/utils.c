@@ -48,7 +48,7 @@ uint32 file_to_str(FILE *f, byte *str[]) {
     f_size = ftell(f);
     rewind(f);
 
-    *str = malloc(f_size * sizeof(byte) + 1);
+    *str = init_array(f_size + 1);
 
     /* Lecture du fichier */
     if (fread(*str, sizeof(byte), f_size, f) != f_size) {
