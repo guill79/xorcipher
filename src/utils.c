@@ -26,7 +26,7 @@ void expand_array(byte **array, uint32 new_length) {
     ALLOC_CHECK(*array);
 }
 
-void free_array(byte **array, uint32 length) {
+void free_array(byte **array) {
     free(*array);
     *array = NULL;
 }
