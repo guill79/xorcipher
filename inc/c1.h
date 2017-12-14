@@ -1,7 +1,6 @@
 #ifndef C1_H
 #define C1_H
 
-#include <stdbool.h>
 #include "types.h"
 
 bool char_valid_message(byte c);
