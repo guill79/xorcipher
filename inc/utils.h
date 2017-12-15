@@ -5,7 +5,7 @@
 
 #define ALLOC_CHECK(ptr) \
     do { \
-        if (ptr == NULL) { perror("Probème d'allocation"); exit(1); } \
+        if (ptr == NULL) { perror("Problème d'allocation"); exit(1); } \
     } while(0)
 
 /* Fonctions pour tableaux */
