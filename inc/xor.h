@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-byte *xor(byte str[], uint32 str_length, byte key[]);
+void xor(byte str_in[], byte str_out[], uint32 str_length, byte key[]);
 
 #endif // XOR_H

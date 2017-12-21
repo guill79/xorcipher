@@ -4,16 +4,12 @@
 #include "../inc/types.h"
 #include "../inc/utils.h"
 
-byte *xor(byte str[], uint32 str_length, byte key[]) {
-    byte *str_out = init_array(str_length + 1);
-
+void xor(byte str_in[], byte str_out[], uint32 str_length, byte key[]) {
     int k = 0;
     for (int i = 0; i < str_length; ++i) {
         if (key[k] == '\0') k = 0;
-        str_out[i] = str[i] ^ key[k];
+        str_out[i] = str_in[i] ^ key[k];
         ++k;
     }
     str_out[str_length] = '\0';
-
-    return str_out;
 }
