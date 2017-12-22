@@ -33,6 +33,17 @@ bool char_valid_key(byte c) {
     return false;
 }
 
+bool is_valid_key(byte key[]) {
+    uint8 i = 0;
+
+    while (key[i] != '\0') {
+        if (!char_valid_key(key[i])) return false;
+        ++i;
+    }
+
+    return true;
+}
+
 bool test_char_on_str(byte c, uint8 pos, uint8 key_length, byte str[],
                       uint32 str_length) {
     // On parcourt le message

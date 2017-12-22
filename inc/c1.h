@@ -5,6 +5,7 @@
 
 bool char_valid_message(byte c);
 bool char_valid_key(byte c);
+bool is_valid_key(byte key[]);
 bool test_char_on_str(byte c, uint8 pos, uint8 key_length, byte str[],
                       uint32 str_length);
 void print_chars(byte chars[], uint8 nb_chars);
