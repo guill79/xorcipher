@@ -163,7 +163,7 @@ double frequency_analysis(byte str[], uint32 str_length) {
     double score = 0.0;
     double th_freq[26] = {9.42, 1.02, 2.64, 3.39, 15.87, 0.95, 1.04, 0.77, \
                           8.41, 0.89, 0.0, 5.34, 3.24, 7.15, 5.14, 2.86, 1.06, \
-                          6.46, 7.9, 7.26, 2.15, 0.0, 0.3, 0.24, 0.32};
+                          6.46, 7.9, 7.26, 6.24, 2.15, 0.0, 0.3, 0.24, 0.32};
 
     for (uint8 char_num = 0; char_num < 26; ++char_num) {
         score += pow(th_freq[char_num] - frequency_char(str, str_length, char_num), 2);
