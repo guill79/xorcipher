@@ -62,7 +62,7 @@ void print_chars(byte chars[], uint8 nb_chars) {
     for (uint8 i = 0; i < nb_chars; ++i) {
         printf("%c", chars[i]);
     }
-    printf("] ");
+    printf("]");
 }
 
 void extract_keys_loop(uint8 i, uint16 *i_key, byte **keys, byte **key_chars,
