@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../inc/utils.h"
+#include "../inc/types.h"
 #include "../inc/c1.h"
 
 bool char_valid_message(byte c) {
@@ -15,8 +16,8 @@ bool char_valid_message(byte c) {
         || (c == 207) || (c == 238) || (c == 239) || (c == 217)
         || (c == 219) || (c == 249) || (c == 251) || (c == 212)
         || (c == 214) || (c == 244) || (c == 246) || (c == 255)
-        || (c == 10) || (c == 13) || (c == 33) || (c == 34)
-        || (c == 39) || (c == 40) || (c == 41) || (c == 59)) {
+        || (c == 10) || (c == 33) || (c == 34) || (c == 39)
+        || (c == 40) || (c == 41) || (c == 59)) {
         return true;
     }
     return false;
