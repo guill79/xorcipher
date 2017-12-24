@@ -64,3 +64,11 @@ void str_to_file(byte str[], uint32 str_length, FILE *f) {
         fputc(str[i], f);
     }
 }
+
+bool is_zero(byte **array, uint16 nb_elem) {
+    for (uint16 i = 0; i < nb_elem; ++i) {
+        if (array[i][0] == 0) return true;
+    }
+
+    return false;
+}
