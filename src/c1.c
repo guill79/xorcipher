@@ -75,7 +75,8 @@ void extract_keys_loop(uint8 i, uint16 *i_key, byte **keys, byte **key_chars,
     }
     for (uint8 j = 0; j < key_chars_length[i]; ++j) {
         temp_key[i] = key_chars[i][j];
-        extract_keys_loop(i + 1, i_key, keys, key_chars, key_chars_length, temp_key, key_length);
+        extract_keys_loop(i + 1, i_key, keys, key_chars, key_chars_length,
+                          temp_key, key_length);
     }
 }
 
@@ -88,7 +89,8 @@ byte **extract_keys(byte **key_chars, uint32 *nb_keys, uint8 key_chars_length[],
     byte *temp_key = init_array(key_length + 1);
 
     uint16 i_key = 0;
-    extract_keys_loop(0, &i_key, keys, key_chars, key_chars_length, temp_key, key_length);
+    extract_keys_loop(0, &i_key, keys, key_chars, key_chars_length,
+                      temp_key, key_length);
 
     free_array(&temp_key);
 
@@ -114,6 +116,15 @@ byte **c1(byte str[], uint32 str_length, uint8 key_length,
                     expand_array(key_chars + i, j + 1);
                 }
             }
+        }
+        // si j == 0 ça veut dire que pour le ième caractère de la clé,
+        // aucun caractère n'est possible : inutile de continuer
+        if (j == 0) {
+            // On met le premier élément à 0 pour pouvoir savoir plus
+            // tard que ce tableau n'est pas complet et qu'il ne
+            // faut pas l'afficher
+            key_chars[i][0] = 0;
+            return key_chars;
         }
         key_chars_length[i] = j;
     }
