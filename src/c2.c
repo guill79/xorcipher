@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 #include "../inc/utils.h"
 #include "../inc/types.h"
@@ -36,7 +35,7 @@ byte remove_diacritics(byte c) {
 }
 
 double frequency_analysis(byte str[], uint32 str_length) {
-    double score = 0.0;
+    double distance = 0.0;
     double temp = 0.0;
     uint32 nb_occurs[ALPHABET_LENGTH] = {0};
     uint32 nb_chars = 0;
@@ -53,10 +52,10 @@ double frequency_analysis(byte str[], uint32 str_length) {
 
     for (byte i = 0; i < ALPHABET_LENGTH; ++i) {
         temp = th_freq[i] - ((double) nb_occurs[i] / nb_chars) * 100;
-        score += temp * temp;
+        distance += temp * temp;
     }
 
-    return score;
+    return distance;
 }
 
 void c2(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys, uint8 key_length) {
