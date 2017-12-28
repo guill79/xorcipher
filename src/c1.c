@@ -99,7 +99,8 @@ byte **extract_keys(byte **key_chars, uint32 *nb_keys, uint8 key_chars_length[],
 
 byte **c1(byte str[], uint32 str_length, uint8 key_length,
           uint8 key_chars_length[]) {
-    byte **key_chars = init_2d_array(key_length, 1);
+    uint8 array_capacity = 10;
+    byte **key_chars = init_2d_array(key_length, array_capacity);
 
     uint8 j = 0;
     // Pour chaque caractère potentiel de la clé
@@ -113,7 +114,11 @@ byte **c1(byte str[], uint32 str_length, uint8 key_length,
                     // aux caractères possibles de la clé
                     key_chars[i][j] = c;
                     ++j;
-                    expand_array(key_chars + i, j + 1);
+
+                    // Si le tableau est trop petit, on augmente sa taille
+                    if (j == array_capacity) {
+                        expand_array(key_chars + i, MAX_NB_VALID_KEY_CHARS);
+                    }
                 }
             }
         }
@@ -128,6 +133,5 @@ byte **c1(byte str[], uint32 str_length, uint8 key_length,
         }
         key_chars_length[i] = j;
     }
-
     return key_chars;
 }

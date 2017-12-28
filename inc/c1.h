@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+// Nombre max de caractères possibles pour un caractère d'une clé
+#define MAX_NB_VALID_KEY_CHARS 70
+
 bool char_valid_message(byte c);
 bool char_valid_key(byte c);
 bool is_valid_key(byte key[]);
