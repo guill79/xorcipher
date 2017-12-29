@@ -6,21 +6,65 @@
 #include "../inc/utils.h"
 #include "../inc/types.h"
 #include "../inc/xor.h"
-#include "../inc/c3.h"
 #include "../inc/c2.h"
+#include "../inc/c3.h"
 
 // Pour chaque indice i, pos[i] correspond à l'indice où la ième lettre commence dans le dictionnaire
 static uint16 pos[] = {0, 24378, 39484, 73694, 114188, 149061, 161546, 171736, 177577, 189288, 191686, 192177, 199254, 215546, 219435, 224807, 251882, 253013, 288844, 311208, 327180, 328171, 335388, 335580, 335643, 335735};
 
-byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length) {
-    byte **dict = init_2d_array(nb_words, max_word_length);
-    FILE *f = fopen(dict_name, "r");
-    CHECK_FILE(f, dict_name);
+byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long positions[27][27][27][27]) {
+    byte **dict = NULL;
+    FILE *f = NULL;
 
-    for (uint16 i = 0; i < nb_words; ++i) {
-        if (fscanf(f, "%s", dict[i]) == 0) {
+    f = fopen(dict_name, "r");
+    CHECK_FILE(f, dict_name);
+    dict = init_2d_array(nb_words, max_word_length);
+
+    // Initialisation de dict (on n'utilise pas init_2d_array car on a besoin
+    // de calloc exceptionnellement)
+    dict = calloc(nb_words, sizeof(byte *));
+    CHECK_PTR(dict);
+    for (uint32 i = 0; i < nb_words; ++i) {
+        dict[i] = calloc(max_word_length, sizeof(byte));
+        CHECK_PTR(dict[i]);
+    }
+
+    // Initialisation de positions
+    for (uint8 i = 0; i < 27; ++i)
+        for (uint8 j = 0; j < 27; ++j)
+            for (uint8 k = 0; k < 27; ++k)
+                for (uint8 l = 0; l < 27; ++l)
+                    positions[i][j][k][l] = -1;
+
+    int cur_letters[4] = {-1};
+
+    uint8 i = 0, j = 0, k = 0, l = 0;
+    for (uint16 i_word = 0; i_word < nb_words; ++i_word) {
+        if (fscanf(f, "%s", dict[i_word]) == 0) {
             fprintf(stderr, "Erreur lors du chargement du dictionnaire.\n");
             exit(EXIT_FAILURE);
+        } else {
+            // Si le caractère est un tiret, on ne peut pas appeler
+            // remove_diacritics qui renverrait 0. On met donc le caractère
+            // à 123 pour le placer aux derniers indices de positions
+            // (les derniers indices sont réservés aux tirets).
+            if (dict[i_word][0] == 45) i = 123;
+            else i = remove_diacritics(dict[i_word][0]);
+            if (dict[i_word][1] == 45) j = 123;
+            else j = remove_diacritics(dict[i_word][1]);
+            if (dict[i_word][2] == 45) k = 123;
+            else k = remove_diacritics(dict[i_word][2]);
+            if (dict[i_word][3] == 45) l = 123;
+            else l = remove_diacritics(dict[i_word][3]);
+
+            if (i && j && k && l && (i != cur_letters[0] || j != cur_letters[1]
+                                     || k != cur_letters[2] || l != cur_letters[3])) {
+                cur_letters[0] = i;
+                cur_letters[1] = j;
+                cur_letters[2] = k;
+                cur_letters[3] = l;
+                positions[i-97][j-97][k-97][l-97] = i_word;
+            }
         }
     }
 

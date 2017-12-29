@@ -7,7 +7,7 @@
 #define MAX_WORD_LENGTH 30
 #define DICT_NAME "fr_dict.txt"
 
-byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length);
+byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long positions[27][27][27][27]);
 bool is_delimiter(byte c);
 byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words);
 bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict);
