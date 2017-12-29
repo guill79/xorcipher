@@ -15,7 +15,7 @@ static uint16 pos[] = {0, 24378, 39484, 73694, 114188, 149061, 161546, 171736, 1
 byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length) {
     byte **dict = init_2d_array(nb_words, max_word_length);
     FILE *f = fopen(dict_name, "r");
-    CHECK_PTR(f);
+    CHECK_FILE(f, dict_name);
 
     for (uint16 i = 0; i < nb_words; ++i) {
         if (fscanf(f, "%s", dict[i]) == 0) {
