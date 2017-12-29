@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../inc/xor.h"
-#include "../inc/types.h"
 #include "../inc/utils.h"
+#include "../inc/types.h"
+#include "../inc/xor.h"
 
 void xor(byte str_in[], byte str_out[], uint32 str_length, byte key[]) {
     uint8 k = 0;
