@@ -19,7 +19,7 @@ byte remove_diacritics(byte c) {
     } else if ((c == 192) || (c == 194) || (c == 196) || (c == 224)
                 || (c == 226) || (c == 228)) {
         return 'a';
-    } else if ((c == 131) || (c == 199)) {
+    } else if ((c == 199) || (c == 231)) {
         return 'c';
     } else if ((c >= 200 && c <= 203) || (c >= 232 && c <= 235)) {
         return 'e';
