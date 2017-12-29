@@ -5,12 +5,13 @@
 
 #define CHECK_PTR(ptr) \
     do { \
-        if (ptr == NULL) { perror("Erreur"); exit(1); } \
+        if (ptr == NULL) { perror("Erreur"); exit(EXIT_FAILURE); } \
     } while(0)
 
 byte *init_array(uint32 length);
 byte **init_2d_array(uint32 length1, uint32 length2);
 void expand_array(byte **array, uint32 new_length);
+void expand_2d_array(byte ***array, uint32 new_length);
 void free_array(byte **array);
 void free_2d_array(byte ***array, uint32 length);
 bool is_zero(byte **array, uint16 nb_elem);

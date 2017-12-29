@@ -26,6 +26,11 @@ void expand_array(byte **array, uint32 new_length) {
     CHECK_PTR(*array);
 }
 
+void expand_2d_array(byte ***array, uint32 new_length) {
+    *array = realloc(*array, new_length * sizeof(byte *));
+    CHECK_PTR(*array);
+}
+
 void free_array(byte **array) {
     free(*array);
     *array = NULL;
@@ -51,7 +56,7 @@ byte *file_to_str(FILE *f, uint32 *f_size) {
     /* Lecture du fichier */
     if (fread(str, sizeof(byte), *f_size, f) != *f_size) {
         perror("Erreur lecture fichier");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     str[*f_size] = '\0';
