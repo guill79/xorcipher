@@ -15,7 +15,13 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
 
     f = fopen(dict_name, "r");
     CHECK_FILE(f, dict_name);
-    dict = init_2d_array(nb_words, max_word_length);
+
+    dict = calloc(nb_words, sizeof(byte *));
+    CHECK_PTR(dict);
+    for (uint32 i = 0; i < nb_words; ++i) {
+        dict[i] = calloc(max_word_length, sizeof(byte));
+        CHECK_PTR(dict[i]);
+    }
 
     int cur_letters4[4] = {-1};
     int cur_letters3[3] = {-1};
@@ -30,7 +36,6 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
             fprintf(stderr, "Erreur lors du chargement du dictionnaire.\n");
             exit(EXIT_FAILURE);
         } else {
-            word_length = strlen((char *) dict[i_word]);
             // Si le caractère est un tiret, on ne peut pas appeler
             // remove_diacritics qui renverrait 0. On met donc le caractère
             // à 123 pour le placer aux indices 26 de positions
@@ -70,90 +75,7 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
             if (i && (i != cur_letters1[0])) {
                 cur_letters1[0] = i;
                 positions[i-97][27][27][27] = i_word;
-            }                
-        //     if (word_length == 4) {
-        //         // Si le caractère est un tiret, on ne peut pas appeler
-        //         // remove_diacritics qui renverrait 0. On met donc le caractère
-        //         // à 123 pour le placer aux indices 26 de positions
-        //         // (les indices 26 sont réservés aux tirets).
-        //         if (dict[i_word][0] == 45) i = 123;
-        //         else i = remove_diacritics(dict[i_word][0]);
-        //         if (dict[i_word][1] == 45) j = 123;
-        //         else j = remove_diacritics(dict[i_word][1]);
-        //         if (dict[i_word][2] == 45) k = 123;
-        //         else k = remove_diacritics(dict[i_word][2]);
-        //         if (dict[i_word][3] == 45) l = 123;
-        //         else l = remove_diacritics(dict[i_word][3]);
-
-        //         if (i && j && k && l && (i != cur_letters[0] || j != cur_letters[1]
-        //                                  || k != cur_letters[2] || l != cur_letters[3])) {
-        //             cur_letters[0] = i;
-        //             cur_letters[1] = j;
-        //             cur_letters[2] = k;
-        //             cur_letters[3] = l;
-        //             positions[i-97][j-97][k-97][l-97] = i_word;
-        //         }                
-        //     } else if (word_length == 3) {
-        //         // Si le caractère est un tiret, on ne peut pas appeler
-        //         // remove_diacritics qui renverrait 0. On met donc le caractère
-        //         // à 123 pour le placer aux indices 26 de positions
-        //         // (les indices 26 sont réservés aux tirets).
-        //         if (dict[i_word][0] == 45) i = 123;
-        //         else i = remove_diacritics(dict[i_word][0]);
-        //         if (dict[i_word][1] == 45) j = 123;
-        //         else j = remove_diacritics(dict[i_word][1]);
-        //         if (dict[i_word][2] == 45) k = 123;
-        //         else k = remove_diacritics(dict[i_word][2]);
-        //         l = 124;
-
-        //         if (i && j && k && l && (i != cur_letters[0] || j != cur_letters[1]
-        //                                  || k != cur_letters[2] || l != cur_letters[3])) {
-        //             cur_letters[0] = i;
-        //             cur_letters[1] = j;
-        //             cur_letters[2] = k;
-        //             cur_letters[3] = l;
-        //             positions[i-97][j-97][k-97][l-97] = i_word;
-        //         }
-        //     } else if (word_length == 2) {
-        //         // Si le caractère est un tiret, on ne peut pas appeler
-        //         // remove_diacritics qui renverrait 0. On met donc le caractère
-        //         // à 123 pour le placer aux indices 26 de positions
-        //         // (les indices 26 sont réservés aux tirets).
-        //         if (dict[i_word][0] == 45) i = 123;
-        //         else i = remove_diacritics(dict[i_word][0]);
-        //         if (dict[i_word][1] == 45) j = 123;
-        //         else j = remove_diacritics(dict[i_word][1]);
-        //         k = 124;
-        //         l = 124;
-
-        //         if (i && j && k && l && (i != cur_letters[0] || j != cur_letters[1]
-        //                                  || k != cur_letters[2] || l != cur_letters[3])) {
-        //             cur_letters[0] = i;
-        //             cur_letters[1] = j;
-        //             cur_letters[2] = k;
-        //             cur_letters[3] = l;
-        //             positions[i-97][j-97][k-97][l-97] = i_word;
-        //         }
-        //     } else if (word_length == 1) {
-        //         // Si le caractère est un tiret, on ne peut pas appeler
-        //         // remove_diacritics qui renverrait 0. On met donc le caractère
-        //         // à 123 pour le placer aux indices 26 de positions
-        //         // (les indices 26 sont réservés aux tirets).
-        //         if (dict[i_word][0] == 45) i = 123;
-        //         else i = remove_diacritics(dict[i_word][0]);
-        //         j = 124;
-        //         k = 124;
-        //         l = 124;
-
-        //         if (i && j && k && l && (i != cur_letters[0] || j != cur_letters[1]
-        //                                  || k != cur_letters[2] || l != cur_letters[3])) {
-        //             cur_letters[0] = i;
-        //             cur_letters[1] = j;
-        //             cur_letters[2] = k;
-        //             cur_letters[3] = l;
-        //             positions[i-97][j-97][k-97][l-97] = i_word;
-        //         }
-        //     }
+            }
         }
     }
 
@@ -163,8 +85,8 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
 }
 
 bool is_delimiter(byte c) {
-    if ((c == 0) || (c == 10) || (c == 32) || (c == 33) || (c == 34)
-        || (c == 40) || (c == 41) || (c == 44) || (c == 46) || (c == 58)
+    if ((c == 13) || (c == 32) || (c == 33) || (c == 34) || (c == 39)
+        || (c == 44) || (c == 46) || (c == 58)
         || (c == 59) || (c == 63)) {
         return true;
     }
@@ -208,14 +130,21 @@ byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
     return words;
 }
 
-bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****positions) {
+byte to_lower(byte c) {
+    if (c >= 65 && c <= 90) {
+        return c + 32;
+    }
+    return c;
+}
+
+bool is_in_dict(byte *word, uint8 word_length, byte **dict, uint32 nb_words_dict, long ****positions) {
     char chars[4] = {0};
     uint8 i = 0, j = 0, k = 0, l = 0;
 
-    int str_length = strlen((char *) word);
+    // int word_length = strlen((char *) word);
     // printf("%d\n", str_length);
 
-    if (str_length == 4) {
+    if (word_length >= 4) {
         chars[0] = remove_diacritics(word[0]);
         chars[1] = remove_diacritics(word[1]);
         chars[2] = remove_diacritics(word[2]);
@@ -228,11 +157,9 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             j = chars[1] - 97;
             k = chars[2] - 97;
             l = chars[3] - 97;
-            // On retire au passage la majuscule de la première lettre
-            word[0] = chars[0];
-            // word[3] = chars[3];
-        } else if (word[0] == 45 || word[1] == 45
-                   || word[2] == 45 || word[3] == 45) {
+            word[0] = to_lower(word[0]);
+        } else if ((word[0] == 45 || word[1] == 45
+                           || word[2] == 45 || word[3] == 45) && (!chars[0] && !chars[1] && !chars[2] && !chars[3])) {
             if (word[0] == 45) i = 26;
             else i = chars[0] - 97;
             if (word[1] == 45) j = 26;
@@ -251,13 +178,15 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
         //     return false;
 
         // Si un mot commençant par ces quatres lettres n'existe pas
+        // printf("i : %d, j : %d, k : %d, l : %d\n", i,j,k,l);
+        // printf("%s\n", word);
         long i_start = positions[i][j][k][l];
+        // printf("yo\n");
         if (positions[i][j][k][l] == -1) return false;
 
         // printf("Mot : %s     position : %ld\n", word, positions[i][j][k][l]);
+        if (strlen((char *) dict[i_start]) != word_length) return false;
 
-        // printf("Start : %ld\n", i_start);
-        if (strlen((char *)dict[i_start]) != str_length) return false;
         while (i_start < nb_words_dict && dict[i_start][3] == word[3]) {
             if (strcmp((char *) word, (char *) dict[i_start]) == 0) {
                 // printf("A comparer : %s et %s : %d\n", word, dict[i_start], strcmp((char *) word, (char *) dict[i_start]) == 0);
@@ -265,7 +194,7 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             }
             ++i_start;
         }
-    } else if (str_length == 3) {
+    } else if (word_length == 3) {
         chars[0] = remove_diacritics(word[0]);
         chars[1] = remove_diacritics(word[1]);
         chars[2] = remove_diacritics(word[2]);
@@ -278,10 +207,10 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             k = chars[2] - 97;
             l = 27;
             // On retire au passage la majuscule de la première lettre
-            word[0] = chars[0];
+            word[0] = to_lower(word[0]);
             // word[3] = chars[3];
-        } else if (word[0] == 45 || word[1] == 45
-                   || word[2] == 45) {
+        } else if ((word[0] == 45 || word[1] == 45
+                           || word[2] == 45) && (!chars[0] && !chars[1] && !chars[2])) {
             if (word[0] == 45) i = 26;
             else i = chars[0] - 97;
             if (word[1] == 45) j = 26;
@@ -305,7 +234,7 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
         // printf("Mot : %s     position : %ld\n", word, positions[i][j][k][l]);
 
         // printf("Start : %ld\n", i_start);
-        if (strlen((char *)dict[i_start]) != str_length) return false;
+        if (strlen((char *)dict[i_start]) != word_length) return false;
         while (i_start < nb_words_dict && dict[i_start][2] == word[2]) {
             if (strcmp((char *) word, (char *) dict[i_start]) == 0) {
                 // printf("A comparer : %s et %s : %d\n", word, dict[i_start], strcmp((char *) word, (char *) dict[i_start]) == 0);
@@ -313,7 +242,7 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             }
             ++i_start;
         }
-    } else if (str_length == 2) {
+    } else if (word_length == 2) {
         chars[0] = remove_diacritics(word[0]);
         chars[1] = remove_diacritics(word[1]);
 
@@ -325,9 +254,9 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             k = 27;
             l = 27;
             // On retire au passage la majuscule de la première lettre
-            word[0] = chars[0];
+            word[0] = to_lower(word[0]);
             // word[3] = chars[3];
-        } else if (word[0] == 45 || word[1] == 45) {
+        } else if ((word[0] == 45 || word[1] == 45)  && (!chars[0] && !chars[1])) {
             if (word[0] == 45) i = 26;
             else i = chars[0] - 97;
             if (word[1] == 45) j = 26;
@@ -351,7 +280,7 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
 
         // printf("Start : %ld\n", i_start);
         // printf("%ld\n", i_start);
-        if (strlen((char *)dict[i_start]) != str_length) return false;
+        if (strlen((char *)dict[i_start]) != word_length) return false;
         while (i_start < nb_words_dict && dict[i_start][1] == word[1]) {
             // printf("yo\n");
             if (strcmp((char *) word, (char *) dict[i_start]) == 0) {
@@ -360,7 +289,7 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             }
             ++i_start;
         }    
-    } else if (str_length == 1) {
+    } else if (word_length == 1) {
         chars[0] = remove_diacritics(word[0]);
 
         // On vérifie que ce sont bien des lettres ou des tirets
@@ -371,9 +300,9 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
             k = 27;
             l = 27;
             // On retire au passage la majuscule de la première lettre
-            word[0] = chars[0];
+            word[0] = to_lower(word[0]);
             // word[3] = chars[3];
-        } else if (word[0] == 45) {
+        } else if (word[0] == 45 && !chars[0]) {
             if (word[0] == 45) i = 26;
             else i = chars[0] - 97;
             j = 27;
@@ -395,7 +324,7 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
         // printf("Mot : %s     position : %ld\n", word, positions[i][j][k][l]);
 
         // printf("Start : %ld\n", i_start);
-        if (strlen((char *)dict[i_start]) != str_length) return false;
+        if (strlen((char *) dict[i_start]) != word_length) return false;
         while (i_start < nb_words_dict && dict[i_start][0] == word[0]) {
             if (strcmp((char *) word, (char *) dict[i_start]) == 0) {
                 // printf("A comparer : %s et %s : %d\n", word, dict[i_start], strcmp((char *) word, (char *) dict[i_start]) == 0);
@@ -405,25 +334,15 @@ bool is_in_dict(byte *word, byte **dict, uint32 nb_words_dict, long ****position
         }    
     }
     
+    // word[0] = to_lower(word[0]);
 
-    return false;
-
-
-    // uint32 p = 0;
-    // c = remove_diacritics(word[0]);
-    // if (c) {
-    //     p = c - 97;
-    //     word[0] = c;
-    // }
-
-    // uint16 i = pos[p];
-    // while (i < nb_words_dict && remove_diacritics(dict[i][0]) == c) {
-    //     if (strcmp((char *) word, (char *) dict[i]) == 0) {
+    // for (uint32 m = 0; m < nb_words_dict; ++m) {
+    //     if (strcmp((char *) word, (char *) dict[m]) == 0) {
     //         return true;
     //     }
-    //     ++i;
     // }
-    // return false;
+
+    return false;
 
 
 }
@@ -445,12 +364,16 @@ void c3(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys, byte
         xor(str_crypted, str_decrypted, str_length, keys[i_key]);
         words = extract_words(str_decrypted, str_length, &nb_words_str);
 
+
         // printf(">>> Chaine à tester : %s\n", str_decrypted);
         for (uint32 i_word = 0; i_word < nb_words_str; ++i_word) {
             word_length = strlen((char *) words[i_word]);
-            // if (word_length == 4) {
-                if (is_in_dict(words[i_word], dict, nb_words_dict, positions)) ++cur_score;
-            // }
+            if (word_length <= 4) {
+                if (is_in_dict(words[i_word], word_length, dict, nb_words_dict, positions)) ++cur_score;
+                // if (strcmp((char*) keys[i_key], "Gff.Lf")==0) {
+                //     printf("%s : %d\n", words[i_word], is_in_dict(words[i_word], word_length, dict, nb_words_dict, positions));
+                // }
+            }
         }
 
         if (cur_score > max_score) {
@@ -458,10 +381,20 @@ void c3(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys, byte
             i_best_key = i_key;
         }
 
+        // if (strcmp((char*) keys[i_key], "adijd")==0)
+            // printf("--Mots--\n");
+            // for (int i = 0; i < nb_words_str; ++i) {
+            //     printf("%s\n", words[i]);
+            // }            
+        // printf("score : %lu\n", cur_score);
+        // }
+
         // Ici nb_words est le nombre d'éléments de words mais la fonction
         // extract_words a réalloué words par blocs de 10, il faut donc arrondir
         // nb_words à la dizaine supérieure pour libérer toute la mémoire
-        free_2d_array(&words, nb_words_str / 10 * 10 + 10);
+        // free_2d_array(&words, nb_words_str / 10 * 10 + 10);
+        // free_2d_array(&words, nb_words_str);
+        // printf("reussi\n");
     }
 
     printf("%s\n", keys[i_best_key]);
