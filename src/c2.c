@@ -12,25 +12,41 @@ static double th_freq[ALPHABET_LENGTH] = {9.42, 1.02, 2.64, 3.39, 15.87, 0.95, \
                                           6.24, 2.15, 0.0, 0.3, 0.24, 0.32};
 
 byte remove_diacritics(byte c) {
-    if (c >= 65 && c <= 90) {
-        return c + 32;
-    } else if (c >= 97 && c <= 122) {
-        return c;
-    } else if ((c == 192) || (c == 194) || (c == 196) || (c == 224)
-                || (c == 226) || (c == 228)) {
-        return 'a';
-    } else if ((c == 199) || (c == 231)) {
-        return 'c';
-    } else if ((c >= 200 && c <= 203) || (c >= 232 && c <= 235)) {
-        return 'e';
-    } else if ((c == 206) || (c == 207) || (c == 238) || (c == 239)) {
-        return 'i';
-    } else if ((c == 212) || (c == 214) || (c == 244) || (c == 246)) {
-        return 'o';
-    } else if ((c == 217) || (c == 219) || (c == 249) || (c == 251)) {
-        return 'u';
-    } else {
-        return 0;
+    switch (c) {
+        case 65: case 66: case 67: case 68: case 69: case 70: case 71:
+        case 72: case 73: case 74: case 75: case 76: case 77: case 78:
+        case 79: case 80: case 81: case 82: case 83: case 84: case 85:
+        case 86: case 87: case 88: case 89: case 90:
+            return c + 32;
+            break;
+        case 97: case 98: case 99: case 100: case 101: case 102: case 103:
+        case 104: case 105: case 106: case 107: case 108: case 109: case 110:
+        case 111: case 112: case 113: case 114: case 115: case 116: case 117:
+        case 118: case 119: case 120: case 121: case 122:
+            return c;
+            break;
+        case 192: case 194: case 196: case 224: case 226: case 228:
+            return 'a';
+            break;
+        case 199: case 231:
+            return 'c';
+            break;
+        case 200: case 201: case 202: case 203: case 232: case 233:
+        case 234: case 235:
+            return 'e';
+            break;
+        case 206: case 207: case 238: case 239:
+            return 'i';
+            break;
+        case 212: case 214: case 244: case 246:
+            return 'o';
+            break;
+        case 217: case 219: case 249: case 251:
+            return 'u';
+            break;
+        default:
+            return 0;
+            break;
     }
 }
 
