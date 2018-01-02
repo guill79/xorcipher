@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdlib.h>
 #include "types.h"
 
 #define CHECK_PTR(ptr) \
