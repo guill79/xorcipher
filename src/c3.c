@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "../inc/utils.h"
 #include "../inc/types.h"
@@ -19,12 +18,12 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
     dict = calloc(nb_words, sizeof(byte *));
     CHECK_PTR(dict);
 
-    int cur_letters4[4] = {-1};
-    int cur_letters3[3] = {-1};
-    int cur_letters2[2] = {-1};
-    int cur_letters1[1] = {-1};
-
+    char cur_letters4[4] = {-1};
+    char cur_letters3[3] = {-1};
+    char cur_letters2[2] = {-1};
+    char cur_letters1[1] = {-1};
     uint8 i = 0, j = 0, k = 0, l = 0;
+
     for (uint16 i_word = 0; i_word < nb_words; ++i_word) {
         dict[i_word] = calloc(max_word_length, sizeof(byte));
         CHECK_PTR(dict[i_word]);
@@ -49,26 +48,30 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
             if (dict[i_word][3] == 45) l = 123;
             else l = remove_diacritics(dict[i_word][3]);
 
-            if (i && j && k && l && (i != cur_letters4[0] || j != cur_letters4[1]
-                                     || k != cur_letters4[2] || l != cur_letters4[3])) {
+            // Mots commençant par ijkl
+            if (l && k && j && i && (l != cur_letters4[3] || k != cur_letters4[2]
+                                     || j != cur_letters4[1] || i != cur_letters4[0])) {
                 cur_letters4[0] = i;
                 cur_letters4[1] = j;
                 cur_letters4[2] = k;
                 cur_letters4[3] = l;
                 positions[i-97][j-97][k-97][l-97] = i_word;
             }
-            if (i && j && k && (i != cur_letters3[0] || j != cur_letters3[1]
-                                     || k != cur_letters3[2])) {
+            // Mots commençant par ijk
+            if (k && j && i && (k != cur_letters3[2] || j != cur_letters3[1]
+                                || i != cur_letters3[0])) {
                 cur_letters3[0] = i;
                 cur_letters3[1] = j;
                 cur_letters3[2] = k;
                 positions[i-97][j-97][k-97][27] = i_word;
             }
-            if (i && j && (i != cur_letters2[0] || j != cur_letters2[1])) {
+            // Mots commençant par ij
+            if (j && i && (j != cur_letters2[1] || i != cur_letters2[0])) {
                 cur_letters2[0] = i;
                 cur_letters2[1] = j;
                 positions[i-97][j-97][27][27] = i_word;
             }
+            // Mots commençant par i
             if (i && (i != cur_letters1[0])) {
                 cur_letters1[0] = i;
                 positions[i-97][27][27][27] = i_word;
@@ -83,32 +86,34 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
 
 bool is_delimiter(byte c) {
     switch (c) {
-        case 13: case 32: case 33: case 34: case 44: case 46: case 58:
-        case 59: case 63:
+        // On considère que 0 est un séparateur, qui indique la fin
+        // d'une chaîne de caractères
+        case 0: case 10: case 13: case 32: case 33: case 34: case 44:
+        case 46: case 58: case 59: case 63:
             return true;
         default:
             return false;
     }
 }
 
-byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
-    byte **words = init_2d_array(5, 1);
+byte **extract_words(byte *str, uint32 str_length, uint32 *i_word) {
     uint32 cur_array_capacity = 5;
+    byte **words = init_2d_array(cur_array_capacity, 1);
     uint8 start = 0,
           nb_letters = 0;
 
-    *nb_words = 0;
+    *i_word = 0;
     for (uint32 i = 0; i <= str_length; ++i) {
         if (is_delimiter(str[i])) {
-            expand_array(words + *nb_words, nb_letters + 1);
-            memcpy(words[*nb_words], str + start, nb_letters);
-            words[*nb_words][nb_letters] = '\0';
+            expand_array(words + *i_word, nb_letters + 1);
+            memcpy(words[*i_word], str + start, nb_letters);
+            words[*i_word][nb_letters] = '\0';
 
-            ++(*nb_words);
-            if (*nb_words == cur_array_capacity) {
-                expand_2d_array(&words, *nb_words + 5);
+            ++(*i_word);
+            if (*i_word == cur_array_capacity) {
+                expand_2d_array(&words, *i_word + 5);
                 cur_array_capacity += 5;
-                for (uint16 j = *nb_words; j < cur_array_capacity; ++j) {
+                for (uint16 j = *i_word; j < cur_array_capacity; ++j) {
                     words[j] = init_array(1);
                 }
             }
@@ -135,6 +140,7 @@ byte to_lower(byte c) {
 }
 
 bool is_in_dict(byte *word, uint8 word_length, byte **dict, uint32 nb_words_dict, long ****positions) {
+    /* /!\ Ne fonctionne que pour des mots de longueur inférieure ou égale à 4 /!\ */
     uint8 i = 0, j = 0, k = 0, l = 0;
     long i_start = 0;
     uint8 i_char_max = word_length - 1;
