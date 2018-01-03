@@ -41,7 +41,8 @@ byte remove_diacritics(byte c) {
         case 212: case 214: case 244: case 246:
             return 'o';
             break;
-        case 217: case 219: case 249: case 251:
+        case 217: case 219: case 220: case 249: case 250: case 251:
+        case 252:
             return 'u';
             break;
         default:
