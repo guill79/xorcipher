@@ -89,6 +89,7 @@ void launch_c3_module(byte *str_in, uint32 str_length, uint8 key_length, byte **
     key_chars = c1(str_in, str_length, key_length, key_chars_length);
 
     if (!is_zero(key_chars, key_length)) {
+
         keys = extract_keys(key_chars, &nb_keys, key_chars_length, key_length);
 
         c3(str_in, str_length, keys, nb_keys, dict, NB_WORDS_DICT, positions);
@@ -106,8 +107,8 @@ int main(int argc, char *argv[]) {
          *key = NULL,
          *mode_str = NULL,
          *key_length_str = NULL;
-    char mode = 0,
-         key_length = 0;
+    char mode = 0;
+    uint16 key_length = 0;
     int opt = 0;
     opterr = 0;
 
@@ -137,116 +138,115 @@ int main(int argc, char *argv[]) {
 
     if (optind != argc) print_usage(argv[0]);
 
-    FILE *f_in;
-    byte *str_in;
-    uint32 str_length;
-    byte **dict = NULL;
-    long ****positions;
-
+    /* Vérification des paramètres */
     // Mode chiffrement/déchiffrement
     if (file_out != NULL && key != NULL && mode_str == NULL && key_length_str == NULL) {
         if (!is_valid_key((byte *) key)) exit(EXIT_FAILURE);
-        f_in = fopen(file_in, "r");
-        CHECK_FILE(f_in, file_in);
-        str_in = file_to_str(f_in, &str_length);
-        launch_xor_module(file_out, str_in, str_length, (byte *) key);
+        mode = 0;
     }
     // Mode décryptage
     else if (mode_str != NULL && file_out == NULL && key == NULL) {
-        f_in = fopen(file_in, "r");
-        CHECK_FILE(f_in, file_in);
-        str_in = file_to_str(f_in, &str_length);
         // Si longueur fournie
         if (key_length_str != NULL) {
             key_length = atoi(key_length_str);
-            // Erreur longueur clé
-            if (key_length <= 0) {
+            // Si longueur invalide (doit tenir sur un uint16)
+            if (key_length <= 0 || key_length > 65535) {
                 fprintf(stderr, "Erreur longueur clé\n");
-                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
             }
         }
 
         // Vérification du mode
         mode = atoi(mode_str);
-        switch (mode) {
-            case 1:
-                if (key_length != 0) {
-                    launch_c1_module(str_in, str_length, key_length);
-                } else {
-                    for (uint8 length = 3; length < 8; ++length) {
-                        launch_c1_module(str_in, str_length, length);
-                    }
-                }
-                break;
-            case 2:
-                if (key_length != 0) {
-                    launch_c2_module(str_in, str_length, key_length);
-                } else {
-                    // start = clock();
-                    for (uint8 length = 3; length < 8; ++length) {
-                        launch_c2_module(str_in, str_length, length);
-                    }
-                    // end = clock();
-                    // printf("Temps CPU : %lf s\n", ((double) end - start) / CLOCKS_PER_SEC);
-                }
-                break;
-            case 3:
-                // Initialisation du tableau 4D positions
-                positions = malloc(27 * sizeof(long ***));
-                CHECK_PTR(positions);
-                for (uint8 i = 0; i < 27; ++i) {
-                    positions[i] = malloc(28 * sizeof(long **));
-                    CHECK_PTR(positions[i]);
-                    for (uint8 j = 0; j < 28; ++j) {
-                        positions[i][j] = malloc(28 * sizeof(long *));
-                        CHECK_PTR(positions[i][j]);
-                        for (uint8 k = 0; k < 28; ++k) {
-                            positions[i][j][k] = malloc(28 * sizeof(long));
-                            CHECK_PTR(positions);
-                            for (uint8 l = 0; l < 28; ++l) {
-                                positions[i][j][k][l] = -1;
-                            }
-                        }
-                    }
-                }
-
-                dict = load_dict(DICT_NAME, NB_WORDS_DICT, MAX_WORD_LENGTH, positions);
-
-                if (key_length != 0) {
-                        launch_c3_module(str_in, str_length, key_length, dict, positions);
-                } else {
-                    start = clock();
-                    for (uint8 length = 3; length < 8; ++length) {
-                        launch_c3_module(str_in, str_length, length, dict, positions);
-                    }
-                    end = clock();
-                    // fprintf(stderr, "Temps CPU : %lf s\n", ((double) end - start) / CLOCKS_PER_SEC);
-                }
-
-                free_2d_array(&dict, NB_WORDS_DICT);
-                
-                // Libération du tableau positions
-                for (int i = 0; i < 27; ++i) {
-                    for (int j = 0; j < 28; ++j) {
-                        for (int k = 0; k < 28; ++k) {
-                            free(positions[i][j][k]);
-                            positions[i][j][k] = NULL;
-                        }
-                        free(positions[i][j]);
-                        positions[i][j] = NULL;
-                    }
-                    free(positions[i]);
-                    positions[i] = NULL;
-                }
-                free(positions);
-                positions = NULL;
-                break;
-            default:
-                fprintf(stderr, "Erreur mode : doit être compris entre 1 et 3\n");
-                break;
+        if (mode != 1 && mode != 2 && mode != 3) {
+            fprintf(stderr, "Erreur mode : doit être compris entre 1 et 3\n");
+            exit(EXIT_FAILURE);
         }
     } else {
         print_usage(argv[0]);
+    }
+
+    uint32 str_length = 0;
+    // Variables pour C3
+    byte **dict = NULL;
+    long ****positions;
+
+    // Ouverture du fichier d'entrée et copie dans str_in
+    FILE *f_in = fopen(file_in, "r");
+    CHECK_FILE(f_in, file_in);
+    byte *str_in = file_to_str(f_in, &str_length);
+
+    switch (mode) {
+        case 0:
+            launch_xor_module(file_out, str_in, str_length, (byte *) key);
+            break;
+        case 1:
+            if (key_length != 0) {
+                launch_c1_module(str_in, str_length, key_length);
+            } else {
+                for (uint8 length = 3; length < 8; ++length) {
+                    launch_c1_module(str_in, str_length, length);
+                }
+            }
+            break;
+        case 2:
+            if (key_length != 0) {
+                launch_c2_module(str_in, str_length, key_length);
+            } else {
+                for (uint8 length = 3; length < 8; ++length) {
+                    launch_c2_module(str_in, str_length, length);
+                }
+            }
+            break;
+        case 3:
+            // Initialisation du tableau 4D positions
+            positions = malloc(27 * sizeof(long ***));
+            CHECK_PTR(positions);
+            for (uint8 i = 0; i < 27; ++i) {
+                positions[i] = malloc(28 * sizeof(long **));
+                CHECK_PTR(positions[i]);
+                for (uint8 j = 0; j < 28; ++j) {
+                    positions[i][j] = malloc(28 * sizeof(long *));
+                    CHECK_PTR(positions[i][j]);
+                    for (uint8 k = 0; k < 28; ++k) {
+                        positions[i][j][k] = malloc(28 * sizeof(long));
+                        CHECK_PTR(positions);
+                        for (uint8 l = 0; l < 28; ++l) {
+                            positions[i][j][k][l] = -1;
+                        }
+                    }
+                }
+            }
+
+            dict = load_dict(DICT_NAME, NB_WORDS_DICT, MAX_WORD_LENGTH, positions);
+
+            if (key_length != 0) {
+                    launch_c3_module(str_in, str_length, key_length, dict, positions);
+            } else {
+                for (uint8 length = 3; length < 8; ++length) {
+                    launch_c3_module(str_in, str_length, length, dict, positions);
+                }
+            }
+
+            free_2d_array(&dict, NB_WORDS_DICT);
+
+            // Libération du tableau positions
+            for (int i = 0; i < 27; ++i) {
+                for (int j = 0; j < 28; ++j) {
+                    for (int k = 0; k < 28; ++k) {
+                        free(positions[i][j][k]);
+                        positions[i][j][k] = NULL;
+                    }
+                    free(positions[i][j]);
+                    positions[i][j] = NULL;
+                }
+                free(positions[i]);
+                positions[i] = NULL;
+            }
+            free(positions);
+            positions = NULL;
+            break;
+        // Pas besoin de default : le mode a déjà été vérifié
     }
 
     free_array(&str_in);
