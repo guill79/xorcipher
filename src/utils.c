@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../inc/utils.h"
+#include "../inc/chars.h"
 
 byte *init_array(uint32 length) {
     byte *array = malloc(length * sizeof(byte));
@@ -76,4 +77,15 @@ bool is_zero(byte **array, uint16 nb_elem) {
     }
 
     return false;
+}
+
+bool is_valid_key(byte key[]) {
+    uint8 i = 0;
+
+    while (key[i] != '\0') {
+        if (!char_valid_key(key[i])) return false;
+        ++i;
+    }
+
+    return true;
 }

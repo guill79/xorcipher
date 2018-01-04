@@ -23,5 +23,6 @@ void free_2d_array(byte ***array, uint32 length);
 bool is_zero(byte **array, uint16 nb_elem);
 byte *file_to_str(FILE *f, uint32 *f_size);
 void str_to_file(byte str[], uint32 str_length, FILE *f);
+bool is_valid_key(byte key[]);
 
 #endif // UTILS_H
