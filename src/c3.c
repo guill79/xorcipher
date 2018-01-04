@@ -4,11 +4,13 @@
 
 #include "../inc/utils.h"
 #include "../inc/types.h"
+#include "../inc/chars.h"
 #include "../inc/xor.h"
 #include "../inc/c2.h"
 #include "../inc/c3.h"
 
-byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long ****positions) {
+byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length,
+                 long ****positions) {
     byte **dict = NULL;
     FILE *f = NULL;
 
@@ -32,6 +34,18 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
             fprintf(stderr, "Erreur lors du chargement du dictionnaire.\n");
             exit(EXIT_FAILURE);
         } else {
+            /*
+             *  Remplissage du tableau 4D positions
+             *  Ce tableau contient, à l'indice [i][j][k][l], l'indice du
+             *  premier mot commençant par i+97, j+97, k+97 et l+97.
+             *  Si i, j, k ou l = 26, c'est un tiret. Si j, k ou l = 27, cela
+             *  signifie que positions[i][j][k][l] contient l'indice du premier
+             *  mot commençant par :
+             *      i+97 -------------> si j = k = l = 27
+             *      i+97, j+97 -------> si k = l = 27
+             *      i+97, j+97, k+97 -> si l = 27
+             */
+
             // Si le caractère est un tiret, on ne peut pas appeler
             // remove_diacritics qui renverrait 0. On met donc le caractère
             // à 123 pour le placer aux indices 26 de positions
@@ -48,16 +62,17 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
             if (dict[i_word][3] == 45) l = 123;
             else l = remove_diacritics(dict[i_word][3]);
 
-            // Mots commençant par ijkl
+            // Indice des mots commençant par ijkl
             if (l && k && j && i && (l != cur_letters4[3] || k != cur_letters4[2]
-                                     || j != cur_letters4[1] || i != cur_letters4[0])) {
+                                     || j != cur_letters4[1]
+                                     || i != cur_letters4[0])) {
                 cur_letters4[0] = i;
                 cur_letters4[1] = j;
                 cur_letters4[2] = k;
                 cur_letters4[3] = l;
                 positions[i-97][j-97][k-97][l-97] = i_word;
             }
-            // Mots commençant par ijk
+            // Indice des mots commençant par ijk
             if (k && j && i && (k != cur_letters3[2] || j != cur_letters3[1]
                                 || i != cur_letters3[0])) {
                 cur_letters3[0] = i;
@@ -65,13 +80,13 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
                 cur_letters3[2] = k;
                 positions[i-97][j-97][k-97][27] = i_word;
             }
-            // Mots commençant par ij
+            // Indice des mots commençant par ij
             if (j && i && (j != cur_letters2[1] || i != cur_letters2[0])) {
                 cur_letters2[0] = i;
                 cur_letters2[1] = j;
                 positions[i-97][j-97][27][27] = i_word;
             }
-            // Mots commençant par i
+            // Indice des mots commençant par i
             if (i && (i != cur_letters1[0])) {
                 cur_letters1[0] = i;
                 positions[i-97][27][27][27] = i_word;
@@ -84,36 +99,26 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length, long *
     return dict;
 }
 
-bool is_delimiter(byte c) {
-    switch (c) {
-        // On considère que 0 est un séparateur, qui indique la fin
-        // d'une chaîne de caractères
-        case 0: case 10: case 13: case 32: case 33: case 34: case 44:
-        case 46: case 58: case 59: case 63:
-            return true;
-        default:
-            return false;
-    }
-}
-
-byte **extract_words(byte *str, uint32 str_length, uint32 *i_word) {
+byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
     uint32 cur_array_capacity = 5;
-    byte **words = init_2d_array(cur_array_capacity, 1);
+    byte **words = NULL;
     uint8 start = 0,
           nb_letters = 0;
 
-    *i_word = 0;
+    words = init_2d_array(cur_array_capacity, 1);
+
+    *nb_words = 0;
     for (uint32 i = 0; i <= str_length; ++i) {
         if (is_delimiter(str[i])) {
-            expand_array(words + *i_word, nb_letters + 1);
-            memcpy(words[*i_word], str + start, nb_letters);
-            words[*i_word][nb_letters] = '\0';
+            expand_array(words + *nb_words, nb_letters + 1);
+            memcpy(words[*nb_words], str + start, nb_letters);
+            words[*nb_words][nb_letters] = '\0';
 
-            ++(*i_word);
-            if (*i_word == cur_array_capacity) {
-                expand_2d_array(&words, *i_word + 5);
+            ++(*nb_words);
+            if (*nb_words == cur_array_capacity) {
+                expand_2d_array(&words, *nb_words + 5);
                 cur_array_capacity += 5;
-                for (uint16 j = *i_word; j < cur_array_capacity; ++j) {
+                for (uint16 j = *nb_words; j < cur_array_capacity; ++j) {
                     words[j] = init_array(1);
                 }
             }
@@ -132,15 +137,8 @@ byte **extract_words(byte *str, uint32 str_length, uint32 *i_word) {
     return words;
 }
 
-byte to_lower(byte c) {
-    if (c >= 65 && c <= 90) {
-        return c + 32;
-    }
-    return c;
-}
-
-bool is_in_dict(byte *word, uint8 word_length, byte **dict, uint32 nb_words_dict, long ****positions) {
-    /* /!\ Ne fonctionne que pour des mots de longueur inférieure ou égale à 4 /!\ */
+bool is_in_dict(byte *word, uint8 word_length, byte **dict,
+                uint32 nb_words_dict, long ****positions) {
     uint8 i = 0, j = 0, k = 0, l = 0;
     long i_start = 0;
     uint8 i_char_max = word_length - 1;
@@ -203,13 +201,16 @@ bool is_in_dict(byte *word, uint8 word_length, byte **dict, uint32 nb_words_dict
 
     word[0] = to_lower(word[0]);
 
-    // i_start représente l'indice dans le tableau dictionnaire à partir
+    // i_start représente l'indice dans le tableau dict à partir
     // duquel se trouvent les mots commençant par les lettres du mot
     // en cours de test (word)
     i_start = positions[i][j][k][l];
-    if (i_start == -1 || strlen((char *) dict[i_start]) != word_length) return false;
+    if (i_start == -1 || strlen((char *) dict[i_start]) != word_length) {
+        return false;
+    }
 
-    while (i_start < nb_words_dict && remove_diacritics(dict[i_start][i_char_max]) == last_char) {
+    while (i_start < nb_words_dict
+           && remove_diacritics(dict[i_start][i_char_max]) == last_char) {
         if (strcmp((char *) word, (char *) dict[i_start]) == 0) {
             return true;
         }
@@ -219,7 +220,8 @@ bool is_in_dict(byte *word, uint8 word_length, byte **dict, uint32 nb_words_dict
     return false;
 }
 
-void c3(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys, byte **dict, uint32 nb_words_dict, long ****positions) {
+void c3(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys,
+        byte **dict, uint32 nb_words_dict, long ****positions) {
     uint32 i_best_key = 0;
     uint32 max_score = 0;
     uint32 cur_score = 0;
@@ -231,15 +233,20 @@ void c3(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys, byte
     str_decrypted = init_array(str_length + 1);
     str_decrypted[str_length] = '\0';
 
+    // Pour chaque clé possible
     for (uint32 i_key = 0; i_key < nb_keys; ++i_key) {
         cur_score = 0;
         xor(str_crypted, str_decrypted, str_length, keys[i_key]);
         words = extract_words(str_decrypted, str_length, &nb_words_str);
 
+        // Pour chaque mot de la chaîne déchiffrée
         for (uint32 i_word = 0; i_word < nb_words_str; ++i_word) {
             word_length = strlen((char *) words[i_word]);
             if (word_length <= 4) {
-                if (is_in_dict(words[i_word], word_length, dict, nb_words_dict, positions)) ++cur_score;
+                if (is_in_dict(words[i_word], word_length, dict, nb_words_dict,
+                               positions)) {
+                    ++cur_score;
+                }
             }
         }
 
