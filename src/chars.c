@@ -1,6 +1,18 @@
 #include "../inc/types.h"
 #include "../inc/chars.h"
 
+/**
+ *  Fonction : char_valid_message
+ *  ------------------------------
+ *  Détermine si le caractère c est valide pour un message.
+ *
+ *  Paramètre :
+ *    - c : caractère à tester
+ *
+ *  Renvoie :
+ *    - true si c est valide pour un message,
+ *    - false sinon.
+ */
 bool char_valid_message(byte c) {
     bool is_valid = 0;
 
@@ -28,6 +40,18 @@ bool char_valid_message(byte c) {
     return is_valid;
 }
 
+/**
+ *  Fonction : char_valid_key
+ *  --------------------------
+ *  Détermine si le caractère c est valide pour une clé.
+ *
+ *  Paramètre :
+ *    - c : caractère à tester
+ *
+ *  Renvoie :
+ *    - true si c est valide pour une clé,
+ *    - false sinon.
+ */
 bool char_valid_key(byte c) {
     bool is_valid = 0;
 
@@ -52,6 +76,18 @@ bool char_valid_key(byte c) {
     return is_valid;
 }
 
+/**
+ *  Fonction : remove_diacritics
+ *  -----------------------------
+ *  Récupère le caractère c sans accents.
+ *
+ *  Paramètre :
+ *    - c : caractère à tester
+ *
+ *  Renvoie :
+ *    - le caractère c en minuscule non accentué si c est une lettre,
+ *    - 0 sinon.
+ */
 byte remove_diacritics(byte c) {
     byte non_diacritic_c = 0;
 
@@ -96,6 +132,18 @@ byte remove_diacritics(byte c) {
     return non_diacritic_c;
 }
 
+/**
+ *  Fonction : is_delimiter
+ *  ------------------------
+ *  Détermine si le caractère c est un séparateur de mots.
+ *
+ *  Paramètre :
+ *    - c : caractère à tester
+ *
+ *  Renvoie :
+ *    - true si c est un séparateur,
+ *    - false sinon.
+ */
 bool is_delimiter(byte c) {
     bool is_delim = 0;
 
@@ -114,6 +162,19 @@ bool is_delimiter(byte c) {
     return is_delim;
 }
 
+/**
+ *  Fonction : to_lower
+ *  --------------------
+ *  Récupère la lettre minuscule correspondant au caractère c majuscule
+ *  (accentué ou non).
+ *
+ *  Paramètre :
+ *    - c : lettre majuscule à transformer
+ *
+ *  Renvoie :
+ *    - la lettre minuscule correspondant à c si c est une lettre majuscule,
+ *    - le caractère c sinon.
+ */
 byte to_lower(byte c) {
     byte lowered_c = 0;
 
