@@ -4,7 +4,7 @@
 # make clean : suppression du dossier obj et des exécutables
 
 CC=gcc
-CFLAGS=-Wall -Ofast
+CFLAGS=-Wall -DNDEBUG -Ofast
 EXEC=xorcipher
 EXEC_TESTS=test
 
