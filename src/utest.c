@@ -139,6 +139,7 @@ void run_tests(function *functions_list) {
         } else {
             function_failed = false;
             printf("%s() ", functions_list[i].name);
+            fflush(stdout);
 
             functions_list[i].ptr();
 
