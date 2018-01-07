@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "../inc/utils.h"
 #include "../inc/types.h"
 #include "../inc/chars.h"
@@ -27,6 +28,8 @@ static double fr_th_freq[ALPHABET_LENGTH] = {9.42, 1.02, 2.64, 3.39, 15.87,
  *            française.
  */
 double frequency_analysis(byte str[], uint32 str_length) {
+    assert(str != NULL && str_length >= 0);
+
     double distance = 0.0;
     double temp = 0.0;
     uint32 nb_occurs[ALPHABET_LENGTH] = {0};
@@ -70,6 +73,9 @@ double frequency_analysis(byte str[], uint32 str_length) {
  */
 byte *c2(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys,
         uint8 key_length) {
+    assert(str_crypted != NULL && str_length >= 0 && nb_keys >= 0
+           && key_length >= 0);
+
     uint32 i_best_key = 0;
     double min_distance = 100000.0;
     double cur_distance = 0.0;

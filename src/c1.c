@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "../inc/utils.h"
 #include "../inc/types.h"
 #include "../inc/chars.h"
@@ -26,6 +27,8 @@
  */
 bool test_char_on_str(byte c, uint8 pos, uint8 key_length, byte str[],
                       uint32 str_length) {
+    assert(pos >= 0 && pos < key_length && str_length >= 0);
+
     // Pour chaque caractère de la chaîne
     for (uint32 i = 0; i < str_length; ++i) {
         // Si le caractère i est codé par le carac c en position pos
@@ -46,6 +49,8 @@ bool test_char_on_str(byte c, uint8 pos, uint8 key_length, byte str[],
  *    - nb_chars : nombre d'éléments de chars
  */
 void print_chars(byte chars[], uint8 nb_chars) {
+    assert(nb_chars >= 0);
+
     printf("[");
     for (uint8 i = 0; i < nb_chars; ++i) {
         printf("%c", chars[i]);
@@ -73,6 +78,8 @@ void print_chars(byte chars[], uint8 nb_chars) {
 void extract_keys_loop(uint8 i, uint16 *i_key, byte **keys, byte **key_chars,
                        byte key_chars_length[], byte temp_key[],
                        uint8 key_length) {
+    assert(i >= 0 && i <= key_length && i_key >= 0);
+
     // Si on atteint la fin du mot
     if (i == key_length) {
         temp_key[key_length] = '\0';
@@ -141,6 +148,8 @@ byte **extract_keys(byte **key_chars, uint8 key_chars_length[],
  */
 byte **c1(byte str_crypted[], uint32 str_length, uint8 key_length,
           uint8 key_chars_length[]) {
+    assert(str_crypted != NULL && str_length >= 0 && key_length >= 0);
+
     uint8 array_capacity = 10;
     byte **key_chars = init_2d_array(key_length, array_capacity);
 

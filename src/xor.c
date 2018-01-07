@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "../inc/utils.h"
 #include "../inc/types.h"
 #include "../inc/xor.h"
@@ -16,6 +17,8 @@
  *    - key        : clé de chiffrement
  */
 void xor(byte str_in[], byte str_out[], uint32 str_length, byte key[]) {
+    assert(str_out != NULL);
+
     uint8 k = 0;
     for (uint32 i = 0; i < str_length; ++i) {
         if (key[k] == '\0') k = 0;

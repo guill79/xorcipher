@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "../inc/utils.h"
 #include "../inc/types.h"
 #include "../inc/chars.h"
@@ -27,6 +28,8 @@
  */
 byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length,
                  long ****positions) {
+    assert(dict_name != NULL && nb_words >= 0);
+
     byte **dict = NULL;
     FILE *f = NULL;
 
@@ -82,7 +85,7 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length,
             if (dict[i_word][3] == 45) l = 123;
             else l = remove_diacritics(dict[i_word][3]);
 
-            // Indice des mots commençant par i+97, j+97, k+97, l+97
+            // Indice des mots commençant par i, j, k, l
             if (l && k && j && i && (l != cur_letters4[3]
                                      || k != cur_letters4[2]
                                      || j != cur_letters4[1]
@@ -93,7 +96,7 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length,
                 cur_letters4[3] = l;
                 positions[i-97][j-97][k-97][l-97] = i_word;
             }
-            // Indice des mots commençant par i+97, j+97, k+97
+            // Indice des mots commençant par i, j, k
             if (k && j && i && (k != cur_letters3[2]
                                 || j != cur_letters3[1]
                                 || i != cur_letters3[0])) {
@@ -102,13 +105,13 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length,
                 cur_letters3[2] = k;
                 positions[i-97][j-97][k-97][27] = i_word;
             }
-            // Indice des mots commençant par i+97, j+97
+            // Indice des mots commençant par i, j
             if (j && i && (j != cur_letters2[1] || i != cur_letters2[0])) {
                 cur_letters2[0] = i;
                 cur_letters2[1] = j;
                 positions[i-97][j-97][27][27] = i_word;
             }
-            // Indice des mots commençant par i+97
+            // Indice des mots commençant par i
             if (i && (i != cur_letters1[0])) {
                 cur_letters1[0] = i;
                 positions[i-97][27][27][27] = i_word;
@@ -135,6 +138,8 @@ byte **load_dict(char *dict_name, uint16 nb_words, uint8 max_word_length,
  *  Renvoie : le tableau contenant les mots de la chaîne str.
  */
 byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
+    assert(str != NULL && str_length >= 0);
+
     uint32 cur_array_capacity = 5;
     byte **words = NULL;
     uint8 start = 0,
@@ -145,6 +150,8 @@ byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
     *nb_words = 0;
     // Pour chaque caractère de str
     for (uint32 i = 0; i <= str_length; ++i) {
+        assert(cur_array_capacity == *nb_words / 5 * 5 + 5);
+
         if (is_delimiter(str[i])) {
             expand_array(words + *nb_words, nb_letters + 1);
             memcpy(words[*nb_words], str + start, nb_letters);
@@ -202,6 +209,8 @@ byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
  */
 bool is_in_dict(byte *word, uint8 word_length, byte **dict,
                 uint32 nb_words_dict, long ****positions) {
+    assert(word != NULL && word_length >= 0 && nb_words_dict >= 0);
+
     uint8 i = 0, j = 0, k = 0, l = 0;
     long i_start = 0;
     uint8 i_char_max = word_length - 1;
@@ -316,6 +325,9 @@ bool is_in_dict(byte *word, uint8 word_length, byte **dict,
  */
 byte *c3(byte str_crypted[], uint32 str_length, byte **keys, uint32 nb_keys,
          byte **dict, uint32 nb_words_dict, long ****positions) {
+    assert(str_crypted != NULL && str_length >= 0 && nb_keys >= 0
+           && nb_words_dict >= 0);
+
     uint32 i_best_key = 0;
     uint32 max_score = 0;
     uint32 cur_score = 0;
