@@ -1,0 +1,2 @@
+Bonjour, ceci est un test pour déterminer si tout fonctionne correctement.
+Il y a bien entendu des accents : éàçùè.

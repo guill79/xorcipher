@@ -13,16 +13,42 @@ testées dans test_crack.sh et qui ne sont pas triviales */
 
 /* Test des fonctions de c1.h */
 void TEST_test_char_on_str(void) {
-    byte str[25] = "Bonjour ceci est un test";
-    byte str_crypted[25] = {0};
-    uint32 str_length = 24;
-    uint8 key_length = 3;
+    byte *str = NULL;
+    byte *str_crypted = NULL;
+    uint32 str_length = 0;
+    uint8 key_length = 0;
 
+    // Ouverture du fichier de test
+    FILE *f = fopen("tests/modules/c1/file1.txt", "r");
+    CHECK_FILE(f, "tests/modules/c1/file1.txt");
+    str = file_to_str(f, &str_length);
+
+    str_crypted = init_array(str_length + 1);
+    str_crypted[str_length] = '\0';
+
+    key_length = 3;
     xor(str, str_crypted, str_length, (byte *) "k:.");
 
     ASSERT(test_char_on_str('k', 0, key_length, str_crypted, str_length));
     ASSERT(test_char_on_str(':', 1, key_length, str_crypted, str_length));
     ASSERT(test_char_on_str('.', 2, key_length, str_crypted, str_length));
+    
+    key_length = 9;
+    xor(str, str_crypted, str_length, (byte *) "bon:jour.");
+
+    ASSERT(test_char_on_str('b', 0, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('o', 1, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('n', 2, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str(':', 3, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('j', 4, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('o', 5, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('u', 6, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('r', 7, key_length, str_crypted, str_length));
+    ASSERT(test_char_on_str('.', 8, key_length, str_crypted, str_length));
+
+    free_array(&str);
+    free_array(&str_crypted);
+    fclose(f);
 }
 
 void TEST_extract_keys(void) {
@@ -54,18 +80,38 @@ void TEST_extract_keys(void) {
 
 /* Test des fonctions de c2.h */
 void TEST_frequency_analysis(void) {
-    byte str[10] = "aaaabbbbc";
-    uint32 str_length = 9;
+    byte *str = NULL;
+    uint32 str_length = 0;
 
+    // Chargement des fichiers de test
+    FILE *f1 = fopen("tests/modules/c2/file1.txt", "r");
+    CHECK_FILE(f1, "tests/modules/c2/file1.txt");
+    FILE *f2 = fopen("tests/modules/c2/file2.txt", "r");
+    CHECK_FILE(f2, "tests/modules/c2/file2.txt");
+
+    str = file_to_str(f1, &str_length);
     ASSERT((int) frequency_analysis(str, str_length) == 3848);
+    free_array(&str);
+
+    str = file_to_str(f2, &str_length);
+    ASSERT((int) frequency_analysis(str, str_length) == 90);
+    free_array(&str);
+
+    fclose(f1);
+    fclose(f2);
 }
 
 /* Test des fonctions de c3.h */
 void TEST_extract_words(void) {
-    byte str[54] = "Test de quoi ? ... de l'extraction,      des mots !!!";
-    uint32 str_length = 53;
+    byte *str = NULL;
+    uint32 str_length = 0;
     uint32 nb_words = 0;
     byte **words = NULL;
+
+    // Chargement du fichier de test
+    FILE *f = fopen("tests/modules/c3/extract.txt", "r");
+    CHECK_FILE(f, "tests/modules/c3/extract.txt");
+    str = file_to_str(f, &str_length);
 
     words = extract_words(str, str_length, &nb_words);
 
@@ -81,6 +127,8 @@ void TEST_extract_words(void) {
     // extract_words réalloue words par blocs de 5, il faut donc arrondir à la
     // demi-dizaine supérieure
     free_2d_array(&words, nb_words / 5 * 5 + 5);
+    free_array(&str);
+    fclose(f);
 }
 
 void TEST_is_in_dict(void) {

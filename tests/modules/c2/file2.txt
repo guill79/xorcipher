@@ -1,0 +1,4 @@
+Ceci est un texte écrit en français, d'une longueur plus élevée que les précédents fichiers.
+Ainsi on devrait trouver une fréquence d'apparition des lettres relativement proche des fréquences
+théoriques de la langue française puisque ce texte est écrit en bon français.
+Ce texte contient aussi des accents puisque la fonction d'analyse fréquentielle est censée prendre en compte les lettres accentuées.
