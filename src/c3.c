@@ -163,7 +163,7 @@ byte **extract_words(byte *str, uint32 str_length, uint32 *nb_words) {
             // On saute les éventuels autres délimiteurs (par ex. un espace
             // après un point)
             do ++i;
-            while (is_delimiter(str[i]) && i < str_length);
+            while (i < str_length && is_delimiter(str[i]));
 
             start = i;
             nb_letters = 0;
