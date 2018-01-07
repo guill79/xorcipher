@@ -11,6 +11,37 @@
 /* Dans ce module de test, on ne teste que les fonctions qui ne sont pas déjà
 testées dans test_crack.sh et qui ne sont pas triviales */
 
+/* Test des fonctions de xor.h */
+void TEST_xor(void) {
+    byte *str_initial = NULL;
+    byte *str_crypted = NULL;
+    byte *str_decrypted = NULL;
+    uint32 str_length = 0;
+    byte key[] = ".:b";
+
+    // Chargement du fichier à chiffrer/déchiffrer
+    FILE *f = fopen("tests/modules/xor/text.txt", "r");
+    CHECK_FILE(f, "tests/modules/xor/text.txt");
+
+    str_initial = file_to_str(f, &str_length);
+    str_crypted = init_array(str_length + 1);
+    str_crypted[str_length] = '\0';
+    str_decrypted = init_array(str_length + 1);
+    str_decrypted[str_length] = '\0';
+
+    // Chiffrement de la chaîne initiale
+    xor(str_initial, str_crypted, str_length, key);
+    // Déchiffrement de la chaîne chiffrée
+    xor(str_crypted, str_decrypted, str_length, key);
+
+    ASSERT(strcmp((char *) str_initial, (char *) str_decrypted) == 0);
+
+    free_array(&str_initial);
+    free_array(&str_crypted);
+    free_array(&str_decrypted);
+    fclose(f);
+}
+
 /* Test des fonctions de c1.h */
 void TEST_test_char_on_str(void) {
     byte *str = NULL;
@@ -216,6 +247,8 @@ void TEST_is_in_dict(void) {
 
 int main(void) {
     function functions_list[] = {
+        {"XOR", 0},
+        {"xor", TEST_xor},
         {"C1", 0},
         {"test_char_on_str", TEST_test_char_on_str},
         {"extract_keys", TEST_extract_keys},

@@ -1,0 +1,1 @@
+Ce texte va se faire successivement chiffrer puis déchiffrer et on doit évidemment obtenir le même texte avant et après. Sinon c'est qu'il y a un problème.
