@@ -1,5 +1,5 @@
 # Projet XOR Cipher
-Algorithme de chiffrement/déchiffrement et décryptage XOR.
+Projet scolaire consistant à implémenter un algorithme de chiffrement/déchiffrement et décryptage XOR.
 ## Installation
 Dans un terminal, taper la commande :
 ```
